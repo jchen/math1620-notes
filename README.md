@@ -1,3 +1,3 @@
-# Math 1560: Number Theory
+# Math 1620: Mathematical Statistics
 
-Live permalink is [here](https://chen.land/math1560-notes/notes.pdf). 
+Live permalink is [here](https://jchen.github.io/math1620-notes/notes.pdf). 
