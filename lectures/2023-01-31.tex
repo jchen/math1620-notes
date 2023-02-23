@@ -1,0 +1,159 @@
+%!TEX root = ../notes.tex
+\section{January 31, 2022}
+\subsection{Quick Notes}
+Roughly going to move through section 5 (Casella \& Berger \cite{casella2002statistical}) through the next couple of weeks. We'll recap a bit of 1610, talk about sample mean, sample variance, and computations. Additionally, what happens when our sample mean and variance comes from normal distributions. This will be next 2 lectures. The lecture after that, we'll talk about the student-$t$ distribution.
+
+We'll mostly be proving results and exercise from the book.
+
+Slides will be posted promptly, and notes will be posted after class.
+
+Some IOUs: published Canvas page with syllabus and HW1. For planning, HW1 will be due Friday of next week, Feb 10.
+
+\subsection{}
+\begin{definition}[Sample Mean]
+    Given random variables $X_1, \dots, X_n$ which have been observed, our sample mean is
+    \[\bar X = \frac{1}{n}\sum^n_{i=1}X_i.\]
+\end{definition}
+\begin{definition}[Sample Variance]
+    Given random variables $X_1, \dots, X_n$ which have been observed, our sample variance is
+    \[S^2 = \frac{1}{N-1}\sum^n_{i=1}(X_i - \bar X)\]
+\end{definition}
+This coefficient $\frac{1}{n-1}$ plays the role in making sure that our estimator is \emph{unbiased}.
+
+We'll be focused on answering:
+\begin{itemize}
+    \item What can we say about these estimators?
+    \item If we know that we are taking iid samples form some distribution, say normal, what is the behavior of these estimators?
+\end{itemize}
+
+Another silly definition:
+\begin{definition}[Sample Standard Deviation]
+    The \ul{Sample Standard Deviation} is just $S := \sqrt{S^2}$.
+\end{definition}
+
+\begin{theorem}[5.2.4 of \cite{casella2002statistical}]
+    The following:
+    \begin{enumerate}[a)]
+        \item $a = \hat X$ is the minimizer of least squares
+              \[\sum^n_{i=1}(X_i - a)^2\]
+        \item \[(n-1)S^2 = \sum^n_{i=1}(X_i - \bar X)^2 = \left(\sum^n_{i=1}X_i^2\right) - n\bar{X}^2\]
+    \end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof of a]
+    We differentiate. We compute
+    \begin{align*}
+        \frac{d}{da}\left( \sum^n_{i=1}(X_i - a)^2 \right) = \sum^n_{i=1} 2(X_i - a) & = 0       \\
+        \Rightarrow \sum^n_{i=1}(X_i - a)                                            & = 0       \\
+        \Rightarrow n\bar{X} - na                                                    & = 0       \\
+        \Rightarrow a                                                                & = \bar{X}
+    \end{align*}
+    which is as desired.
+\end{proof}
+\begin{proof}[Proof of b]
+    The first equality falls out of the definition. We work on the second equality, that we can prove the sum out of the summand.
+
+    \begin{align*}
+        \sum^n_{i=1}(X_i - \bar{X})^2 = \sum^n_{i=1}(X_i^2 - \underbrace{2X_i \bar{X} + \bar{X}^2}) & = \left( \sum^n_{i=1}X_i^2 \right) - 2\bar{X} \sum^n_{i=1}X_i + n\bar{X}^2 \\
+                                                                                                    & = \left( \sum^n_{i=1}X_i^2 \right) - 2\bar{X}(n\bar{X}) + n\bar{X}^2       \\
+                                                                                                    & = \left( \sum^n_{i=1}X_i^2 \right) - n\bar{X}^2
+    \end{align*}
+    which is as desired.
+\end{proof}
+
+We will now think of these estimators as random variables.
+\begin{theorem}[5.2.5 of \cite{casella2002statistical}]
+    The following:
+    \begin{enumerate}[a)]
+        \item That the expectation of iid random variables is the same as expectation of single random variable $n$ times.
+              \[\mathsf{E}\left( \sum^n_{i=1} g(X_i) \right) = n\mathsf{E}(g(X_i))\]
+              We can simply do additivity of expectation to pull the sum out,
+              \[=\sum^n_{i=1}\mathsf{E}(g(X_i)).\]
+        \item The same for variance,
+              \[\mathsf{Var}\left( \sum^n_{i=1} g(X_i) \right) = n\Var(g(X_i)).\]
+              We use the definition of expectation here
+              \begin{align*}
+                   & = \E\left[ \left(\sum^n_{i=1}g(X_i)]\right) - \E\left( \sum^n_{i=1} g(X_i) \right) \right]^2 \\
+                   & = \E\left[ \sum^n_{i=1} \left( g(X_i) - \E(g(X_i))\right) \right]^2                          \\
+                   & =^* \left[ \sum^n_{i=1} \E\left( g(X_i) - \E(g(X_i)) \right) \right]^2                       \\
+                   & = \sum^n_{i=1}\Var(g(X_i))                                                                   \\
+                   & = n\Var g(X_i)
+              \end{align*}
+              where $(*)$ is % ***
+              \begin{align*}
+                  \E(g(X_i) - \E(g(X_i)))^2 = \underbrace{\E(g(X_i) - \E(g(X_i)))}_{\mathsf{Covar}} \E(g(X_i) - \E(g(X_j)))
+              \end{align*}
+    \end{enumerate}
+\end{theorem}
+Notice we're still talking about these without knowledge of the underlying distributions. We'll do one more version of that.
+
+\begin{theorem}[5.2.6 of \cite{casella2002statistical}]
+    \label{thm:5.3.1}
+    Let $X_1, \dots, X_n$ be iid samples from a population\footnote{Not necessarily normal, this is weaker.} with mean $\mu$ and variance $\sigma^2$. We can say the following:
+    \begin{enumerate}[a)]
+        \item $\E\bar{X} = \mu$.
+
+              Since \[\displaystyle\E(\bar{X}) = \E\left(\frac{1}{n} \sum^n_{i=1} X_i\right) = \frac{1}{n}\sum^n_{i=1}\E(X_i) = \frac{1}{n}\cdot n\cdot \mu = \mu.\]
+        \item $\Var \bar{X} = \frac{\sigma^2}{n}$.
+
+              Since \[\displaystyle \Var \bar{X} = \Var\left( \frac{1}{n}\sum^n_{i=1}X_i \right) = \Var\left( \sum^n_{i=1}\frac{1}{n}X_i \right) = n\Var\left( \frac{1}{n}X_i \right) = \frac{n}{n^2}\Var(X_i) = \frac{1}{n}\sigma^2.\]
+
+        \item $\E S^2 = \sigma^2$. \emph{Proved below}.
+    \end{enumerate}
+\end{theorem}
+\begin{proof}[Proof of c]
+    We have
+    \begin{align*}
+        \E S^2 & = \E\left( \frac{1}{n-1}\sum^n_{i=1} (X_i - \bar{X})^2 \right)                                                                                                                   \\
+               & = \E\left( \frac{1}{n-1}\left( \sum^{n}_{i=1}x_i^2 \right) - \frac{1}{n-1}\left( \sum^{n}_{i=1}2X_i\bar{X} \right) + \frac{1}{n-1}\left( \sum^{n}_{i=1}\bar{X}^2 \right) \right) \\
+               & = \E\left( \frac{1}{n-1}\left( \sum^{n}_{i=1}X_i^2 \right) - \frac{n}{n-1}\bar{X}^2 \right)                                                                                      \\
+               & = \frac{1}{n-1}\E\left( \sum_{i=1}^{n}X_i^2 \right) - \frac{n}{n-1}\E(\bar{X}^2)                                                                                                 \\
+               & = \frac{n}{n-1}\E(X_i^2) - \frac{n}{n-1}\E(\bar{X}^2)
+        \intertext{Using the rule $\E(X^2) - \E(X)^2 = \Var(X)$, }
+               & = \frac{n}{n-1}\left( \Var(X_i) - \E(X_i)^2 - \Var(\bar{X}) + \E(\bar{X})^2  \right)                                                                                             \\
+               & = \frac{n}{n-1}\left( \sigma^2 - \mu^2 - \frac{\sigma^2}{n} + \mu^2 \right)                                                                                                      \\
+               & = \frac{n}{n-1}\left( \frac{n-1}{n}\sigma^2 \right) = \sigma^2
+    \end{align*}
+    as desired.
+\end{proof}
+
+We still so far have made no assumptions about the underlying distributions of $X_i$, we now impose a normality assumption to compute $\bar{X}$ and $S^2$ (as in 5.3 of \cite{casella2002statistical}), sampling from normal distribution with variance $\sigma^2$ and mean $\mu$.
+
+Our setup is now $X_i, \dots, X_n$ iid samples from $\mathcal{N}(\mu, \sigma^2)$.
+
+\begin{theorem}[5.3.1 of \cite{casella2002statistical}]
+    We have
+    \begin{enumerate}[a)]
+        \item $\bar{X}$ and $S^2$ are independent\footnote{Their covariance is $0$, so any downstream application of these estimators can use this assumption.}.
+        \item $\bar{X}\sim \mathcal{N}(\mu, \frac{\sigma^2}{n})$, where $\E\overline{X} = \mu$ and $\Var X_i = \frac{\sigma^2}{n}$.
+        \item $(n-1)\frac{S^2}{\sigma^2}$ has $\chi^2$ distribution with $n-1$ degrees of freedom.
+    \end{enumerate}
+\end{theorem}
+\begin{proof}
+    \recall that functions of independent random vectors are independent random variables.
+
+    The goal is to show that $\bar{X}$ and $S^2$ are functions of independent random vectors.
+    \begin{align*}
+        S^2 & = \frac{1}{n-1}\sum_{i=1}^{n}(X_i - \bar{X})^2                                                                  \\
+            & = \frac{1}{n-1}\left( (X_1 - \bar{X})^2 + \sum_{i=2}^{n}(X_i - \bar{X})^2 \right)
+        \intertext{then with $\sum_{i=1}^{n}(X_i - \bar{X}) = 0$, ***}
+            & = \frac{1}{n-1}\left( \left( \sum_{i=2}^{n}(X_i - \bar{X}) \right)^2 + \sum_{i=2}^{n} (X_i - \bar{X})^2 \right)
+        \intertext{We can now say that $S^2$ is a function of $X_2-\bar{X}, \dots, X_n - \bar{X}$.}
+    \end{align*}
+    We write the pdf in terms of $X_1, \dots, X_n$, we'll do a change of variables, and factor it in the new variables, and get independence. Our new goal is to factor the pdf to show independence.
+
+    The following is the joint pdf of $X_1, \dots, X_n$,
+    \begin{align*}
+        F(X_i, \dots, X_n) = \frac{1}{(2\pi)^{n/2}} e^{-\frac{1}{2}\sum_{i=1}^{n}X_i^2}
+    \end{align*}
+    (This is just the product of multiple Gaussian distributions.)
+
+    Changing coordinates, $Y_1 = \bar{X}$, $Y_2 := \bar{X} - X_2$, $Y_3 := \bar{X} - X_3$, \dots, $Y_n = \bar{X} - X_n$, adjusting by the Jacobian of the transformation. This transformation has Jacobian $J = \frac{1}{n}$ (by induction, writing down matrix and computing determinant).
+
+    \begin{align*}
+        F(Y_1, \dots, Y_n) = \frac{n}{(2\pi)^{n/2}}\cdot e^{-\frac{1}{2}\left( Y_1 - \sum_{i=2}^{n}Y_i \right)^2}                   \\
+         & = \frac{n}{(2\pi)^{n/2}}\cdot e^{-\frac{1}{2}\sum_{i=2}^{n}(Y_i + Y_1)^2}                                                \\
+         & = \left[ \left( \frac{n}{2\pi} \right)^{\frac{1}{2}}e^{-\frac{nY_1^2}{2}} \right]\left[ \text{alksjdhfalskjd***} \right]
+    \end{align*}
+    in the end $Y_1$ independent from $(Y_2, \dots, Y_n)^2$ so $\overline{X}$ independent from $S^2$.
+\end{proof}

@@ -1,0 +1,66 @@
+\documentclass[letterpaper, 11pt, colorful, sections]{jiahua}
+\title{Math 1620: Mathematical Statistics \textit{Lecture Notes}}
+\author{Y. Jain}
+\date{Spring 2022}
+
+\usepackage[textsize=tiny, textwidth=18mm]{todonotes}
+\setuptodonotes{color=green!20}
+\usepackage{marginnote}
+
+\makeatletter
+\renewcommand{\@todonotes@drawMarginNoteWithLine}{%
+\begin{tikzpicture}[remember picture, overlay, baseline=-0.75ex]%
+    \node [coordinate] (inText) {};%
+\end{tikzpicture}%
+\marginnote[{% Draw note in left margin
+    \@todonotes@drawMarginNote%
+    \@todonotes@drawLineToLeftMargin%
+}]{% Draw note in right margin
+    \@todonotes@drawMarginNote%
+    \@todonotes@drawLineToRightMargin%
+}%
+}%
+\makeatother
+
+\usepackage{tablefootnote} 
+\makeatletter 
+\AfterEndEnvironment{mdframed}{%
+ \tfn@tablefootnoteprintout% 
+ \gdef\tfn@fnt{0}% 
+}
+\makeatother
+\newcommand{\framedfootnote}{\tablefootnote}
+
+
+\usepackage{cancel}
+\usetikzlibrary{cd}
+\numberwithin{equation}{section}
+
+\usepackage[all,cmtip]{xy}
+
+% \includeonly{lectures/2023-02-16.tex, lectures/2023-02-23.tex}
+
+\begin{document}
+\maketitle
+\begin{quote}
+    \quad These are lecture notes for Math 1620: Mathematical Statistics taught at \textsc{Brown University} by Yajit Jain in the Spring of 2023.
+
+    \quad These notes are taken by Jiahua Chen with gracious help and input from classmates. Please direct any mistakes/errata to me via email, or feel free to pull request the notes repository (\url{https://github.com/jchen/math1620-notes}).
+
+    \quad Notes last updated \today.
+\end{quote}
+\tableofcontents
+\bibliographystyle{alpha}
+\bibliography{bibliography}
+
+\newpage
+\include{lectures/2023-01-26.tex}
+\include{lectures/2023-01-31.tex}
+\include{lectures/2023-02-02.tex}
+\include{lectures/2023-02-07.tex}
+\include{lectures/2023-02-09.tex}
+\include{lectures/2023-02-14.tex}
+\include{lectures/2023-02-16.tex}
+\include{lectures/2023-02-23.tex}
+
+\end{document}

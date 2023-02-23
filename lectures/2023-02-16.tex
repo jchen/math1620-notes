@@ -1,0 +1,157 @@
+%!TEX root = ../notes.tex
+\section{February 16, 2022}
+
+\subsection{MLEs and Likelihood Ratio Tests}
+Today we'll work toward proving the Neyman-Pearson. The idea is to give the \emph{optimal} test to distinguish between two \emph{simple} hypotheses.
+
+By simple, we mean that we wish to distinguish whether two samples come from the same distribution, or different distributions.
+
+By optimal, we mean that for a fixed $\alpha$, we hope to minimize $\beta$.
+
+\begin{definition}
+    If $X_1, \dots, X_n$ are iid samples from a population with pdf $f(x\mid \theta_1, \dots, \theta_n)$. Then the \ul{likelihood function} of $X$ is
+    \[L(\theta\mid X).\]
+    That is, we fix the samples and ask about our parameters given our fixed samples. Another way to think of this is that given some samples, what is the best model to fit to our sample. This is defined as
+    \begin{align*}
+        L(\theta\mid X)
+         & = L(\theta_1, \dots, \theta_k\mid X_1, \dots, X_n)   \\
+         & = \prod_{i=1}^n f(X_i\mid \theta_1, \dots, \theta_n)
+    \end{align*}
+\end{definition}
+
+\begin{definition}[Maximum Likelihood Estimator]
+    For each sample point $x$, let $\hat{\theta}(x)$ be a parameter value at which $L(\theta, x)$ is maximized (as a function of $\theta$). $\hat{\theta}(x)$ is the maximum likelihood estimator of $\theta$ based on the data $x$.
+\end{definition}
+MLE is the parameter point for which the observed sample is most likely.
+
+If our likelihood function is differentiable in $\theta$, then the possible candidates for MLEs are those critical points
+\[\frac{\partial}{\partial \theta_i}L(\theta\mid x) = 0\]
+for $i = 1,\dots, k$.
+
+\begin{example}
+    Let $X_i, \dots, X_n$ be iid from $\cN(\theta, 1)$. What is $L(\theta\mid X)$?
+
+    \begin{align*}
+        L(\theta\mid X) & = \prod_{i=1}^n \frac{1}{(2\pi)^{1/2}}e^{-\frac{1}{2}(X_i - \theta)^2} \\
+                        & = \frac{1}{(2\pi)^{n/2}}e^{-\frac{1}{2}\sum^n_{i=1}(X_i - \theta)^2}
+    \end{align*}
+    What's our maximum likelihood? We set $\frac{d}{d\theta}L(\theta\mid X) = 0$. When we differentiate, the constant won't matter, the exponent won't matter, so we just want our exponent to be $0$\framedfootnote{Remove constants and keep on chain-ruling.}.
+    \[\sum^n_{i=1}(X_i - \theta) = 0\]
+    and solving for $\theta$ gives that $\theta = \bar{X}$.
+
+    In this setup, the best guess for $\theta$ is the sample mean.
+
+    When $n$ goes to infinity, the sample mean will converge to the true mean.
+\end{example}
+We'll spend the next two weeks computing the maximum likelihood estimators.
+
+Let $\Theta$ be the entire parameter space. We define
+\begin{definition}[Likelihood Ratio Test]
+    The likelihood ratio test statistic for testing $H_0 : \theta\in \Theta_0$ vs $H_1: \theta\in \Theta_0^c$ is
+    \[\lambda(x) = \frac{\sup_{\theta \in \Theta_0}L(\theta\mid x)}{\sup_{\theta\in\Theta}L(\theta\mid x)}.\]
+    We should reject the null if $\lambda(x) \leq c$. That is, the probability is low that the null contains the parameter.
+\end{definition}
+
+\begin{example}
+    Let $X_1, \dots, X_n$ be iid from $\cN(\theta, 1)$. $H_0: \theta = \theta_0$ and $H_1 : \theta\neq \theta_0$.
+    \begin{align*}
+        \lambda(x) & = \frac{L(\theta_0 \mid x)}{L(\bar{X}\mid x)}                                                                                                    \\
+                   & = \frac{\frac{1}{(2\pi)^{n/2}}e^{-\frac{1}{2}\sum^n_{i=1}(X_i - \theta)^2}}{\frac{1}{(2\pi)^{n/2}}e^{-\frac{1}{2}\sum^n_{i=1}(X_i - \bar{X})^2}} \\
+                   & = \exp\left[ \left(\sum^n_{i=1} -(X_i - \theta_0)^2 + (X_i - \bar{X})^2 \right)/2 \right]                                                        \\
+        \intertext{Using identity $\sum^n_{i=1} (x_i - \theta_0)^2 = \sum^n_{i=1}(X_i - \bar{X})^2 + n(\bar{X} - \theta_0)^2$}
+        \lambda(x) & = \exp\left( -\frac{n}{2}(\bar{X} - \theta_0)^2 \right)
+    \end{align*}
+    Then we have rejection region
+    \begin{align*}
+        \{x\mid\lambda(x)\leq c\} & =  \{x\mid \exp\left( -\frac{n}{2}(\bar{X} - \theta_0)^2 \right) \leq c\}        \\
+                                  & = \left\{x\Bigm\vert |\bar{X} - \theta_0| \geq \sqrt{\frac{-2\log c}{n}}\right\}
+    \end{align*}
+    This matches up with what we saw last week---we reject the null more easily the farther away from the mean we are.
+\end{example}
+
+\subsection{Neyman-Pearson Lemma}
+
+
+The point of the Neyman-Pearson Lemma is that in testing simple hypotheses, the likelihood ratio test is the optimal test that under a Type I error, it minimizes Type II error. There is a proof ot this lemma in Casella-Berger that is unwieldly and set-theoretic.
+
+We'll prove it for \emph{simple} hypotheses, while the book proves it for the general likelihood ratio test.
+
+We'll first define some notation.
+
+Consider simple hypotheses $H_0, H_1$. This means we are choosing between two known distributions. In particular $\theta_0$ is one distribution, $\theta_1$ is another distribution. We can take a slightly different definition of the likelihood ratio test of the form
+\[\text{if }\lambda(x) = \frac{p_1(x)}{p_0(x)} > \lambda\]
+we accept $H_1$, otherwise reject null.\footnote{We flipped the numerator and demoninator, and are accepting the alternate instead of rejecting the null.}
+
+Let $R_T$ be the subset of $X$ where an arbitrary test $T$ decides $H_1$.
+
+We denote
+\[P_0(R_T) = \int_{R_T}p_0(x)\ dx = \Pr(\text{Type I error})\]
+we'll also say that
+\[P_1(R_T) = \int_{R_T}p_1(x)\ dx = \text{power}\]
+and $1-P_1(R_T)$ is our Type II error.
+
+Let $R_{LR}$ (for likelihood ratio) denote the subset of $x$ where our test decides $H_1$. Then,
+\[R_{LR}(\lambda) = \left\{ x\mid p_1(x) > \lambda p_0(x) \right\}.\]
+
+If we set $P_0(R_{LR}(\lambda)) = \int_{R_{LR}} p_0(x)\ dx$, we choose $\lambda$ such that $P_0(R_{LR}(\lambda)) = \alpha$.
+
+We'll want to choose such an $R_T$ that exactly matches $R_{LR}$.
+
+\begin{theorem}
+    Consider the Likelihood Ratio Test where
+    \[\text{if } \frac{p_1(x)}{p_0(x)}>\lambda \implies \text{reject null}\]
+    Choose $\lambda = t$ such that $P_0(R_{LR}(\lambda)) = \alpha$.
+
+    There does not exist another test $T$ with $P_0(R_T) = \alpha$ and $P_1(R_T) \geq P_1(R_{LR}(\lambda))$.
+\end{theorem}
+\begin{proof}
+    Let $R_{NP} = R_{LR}(\lambda)$\footnote{We fixed $\lambda$, so we get rid of the notation.}.
+
+    Assume $T$ is a test such that $p_0(R_T) = \alpha$.
+
+    For $R < \mathrm{range}(x)$,
+    \begin{align*}
+        P_i(R) = \int_{R}p_i(x)\ dx = \text{probability of $x\in R$ under $H_i$}
+    \end{align*}
+    Splitting this up,
+    \begin{align*}
+        P_i(R_{NP}) & = P_i(R_{NP}\cap R_T) + P_i(R_{NP}\cap R_T^C)  \\
+        P_i(R_{T})  & = P_i(R_{NP}\cap R_T) + P_i(R_{NP}^C \cap R_T)
+    \end{align*}
+    When $i=0$, $P_0(R_{NP}) = P_0(R_{T}) = \alpha$, and the first terms are the same by setup, so $P_i(R_{NP}\cap R_T^C) = P_i(R_{NP}^C \cap R_T)$.
+
+    We want to show that $P_1(R_{NP}) \geq P_1(R_T)$. Suffices to show
+    \[P_1(R_{NP}\cap R_T^C) \geq P_1(R_{NP}^C\cap R_T)\]
+
+    Let's work on this.
+    \begin{align*}
+        P_1(R_{NP}\cap R_T^C)
+         & = \int_{R_{NP}\cap R_T^C} p_1(x)\ dx                    \\
+        \intertext{Because this is in the domain $R_{NP}$, it is larger than the threshold}
+         & \geq\footnote{We invoke the definition of the LRT test,
+            and again when we have a $\geq$ below}
+        \lambda \int_{R_{NP}\cap R_T^C} p_0(x)\ dx                 \\
+         & = \lambda P_0(R_{NP}\cap R_T^C)                         \\
+         & = \lambda P_0(R_{NP}^C \cap R_T)                        \\
+         & = \lambda \int_{R_{NP}^C\cap R_T}p_0(x)\ dx             \\
+         & \geq \int_{R_{NP}^C \cap R_T} p_1(x)\ dx                \\
+         & = P_1(R_{NP}^C\cap R_T)
+    \end{align*}
+    we might observe that this is essentially the Radon-Nikodym theorem.
+\end{proof}
+
+We'll give a short other proof.
+\begin{theorem}[Lagrange Multiplier]
+    If $\lambda$ is a fixed nonnegaitve number $X_0(\lambda)$.
+
+    A maximizer of
+    \[M(x, \lambda) = f(x) - \lambda g(x)\]
+    then $X_0(\lambda)$ maximizees $f(x)$ over all such $x$ such that $g(x) \leq g(X_0(\lambda))$.
+\end{theorem}
+Notice we are in a constraint maximization problem, minimizing Type II error (maximizing power), subject to the constraint that Type I $\leq \alpha$.
+
+\begin{proof}[Proof sketch]
+    We want to maximize $P_1(x)$ such that $P_0(x)\leq \alpha$. Then $M(X, \lambda) = P_1(x) - \lambda P_0(x)$.
+
+    We'll find when we apply the theorem that $X(\lambda) = \frac{P_1(x)}{P_0(x)}$ maximizes $M$ subject to $P_0(x)\leq \alpha$.
+\end{proof}

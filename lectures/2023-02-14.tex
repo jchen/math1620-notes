@@ -1,0 +1,106 @@
+%!TEX root = ../notes.tex
+\section{February 14, 2022}
+Today we'll talk about $p$-values. On Thursday, we'll continue to discuss optimal samples sizes for optimal errors.
+
+\subsection{The \texorpdfstring{$p$}{p}-value \& the \texorpdfstring{$p$}{p} test}
+
+\begin{definition}[$p$-value]
+    Let $W(X)$\framedfootnote{In understanding this definition, we can think of $W(X)$ as the sample mean, as we've seen before.} be some test statistic on a raw value $X$, such that large values of $W(X)$ give evidence that $H_1$ is true. For each observed sample $x$, define $p(x)$ to be
+    \[p(x) := \sup_{\theta\in \Theta_0} \Pr_{\theta}(W(X) \geq w(x)).\]
+    $p(x)$ is called the \ul{$p$-value}.
+\end{definition}
+
+\begin{example}
+    If $\Theta_0 = \{\theta\}$, this implies that the $p$-value is just $\Pr_{\theta}(W(X) \geq w(x))$.
+\end{example}
+
+The $p$-value is the probability, under $H_0$, of observing a value of the test statistic that is more extreme than what we have observed.
+
+\begin{example}
+    Let $W(x) = \bar{x}$. We have 2 normal distributions centered at $\mu_A$ and $\mu_B$.
+
+    If we fixed a Type I error $\alpha$, we computed a threshold on which we could achieve that Type I error $c_\alpha$. Our hypothesis test was to reject the null if our sample mean was greater than or equal to $c_\alpha$.
+
+    Suppose we collect $n$ samples and compute $\bar{x} \geq c_\alpha$, we should then reject the null.
+
+    We can come to the same conclusion if we used the $p$-value.
+
+    \begin{align*}
+        p(\bar{x}) = \Pr_{\mu_A}(\bar{X} \geq \bar{x}) & \leq \Pr_{\mu_A}(\bar{x} \geq c_\alpha) \\
+        p(\bar{x})                                     & \leq \alpha.
+    \end{align*}
+
+    so this suggests we could also conduct hypothesis test as follows: we reject the null if $p(\bar{x})\leq \alpha$.
+
+    This is called the $p$-test.\framedfootnote{As opposed to the \emph{critical point test} from before, selecting a critical point $c$.}
+\end{example}
+
+Let's compute the probability of committing a Type I error using $p$-test. In other worse, we compute
+\[\Pr(p(\hat{x})\leq \alpha).\]
+We'll need the distribution of $p$ first to compute this.
+
+\begin{lemma}
+    The $p$-value of a statistic drawn from a continuous distribution is $\mathrm{Uniform}(0, 1)$.
+\end{lemma}
+\begin{proof}
+    We defined
+    \[p(x) = \Pr_{\theta_0}(W(X)\geq w(x))\]
+    is the cdf of $W(X)$, suffices to show that the cdf of any random variable is uniform\footnote{
+        That is, choose random $X$, with cdf $F_X(x)$. $Z: F_X(x)$ is uniform. We compute the CDF of $Z$.
+        \begin{align*}
+            F_Z(x) & = \Pr(F_X(x)\leq x)      \\
+                   & = \Pr(x\leq F_X^{-1}(x)) \\
+                   & = F_X(F_X^{-1}(x)) = x
+        \end{align*}
+        which is the cdf of uniform. (A remark on $F^{-1}_X$, use pseudoinverse if cdf $F$ is not continuous).
+    }.
+\end{proof}
+
+Particularly, if $p(\hat{x})$ is uniform, we have
+\[\Pr(p(\hat{x})\leq \alpha) = \alpha.\]
+
+We now have two ways of conducting a hypothesis test:
+\begin{enumerate}
+    \item Critical point test, covered last week: We set $\alpha$ and compute threshold $c_\alpha$. Reject if $\bar{x}\leq c_\alpha$ (or $\geq$).
+    \item $p$-test: We set $\alpha$ and compute $p$-value as a function of our test statistic. Reject if $p(\bar{x})\leq \alpha$.
+\end{enumerate}
+
+This also allows us to talk about the $p$-value of arbitrary tests.
+
+\subsection{Wald Test}
+This will be our third test.
+
+We have a scalar $\theta$, test statistic $\hat{\theta}$ which is an estimate of $\theta$, and standard error $\hat{\mathrm{SE}}$ of $\hat{\theta}$.
+
+Our null hypothesis is $H_0: \hat{\theta} = \theta_0$. Our alternative hypothesis is $H_1 : \hat{\theta}\neq \theta_0$.
+
+We impose the assumption on $\hat{\theta}$, which is that $\hat{\theta}$ is asymptotically normal.
+\[\frac{\hat{\theta} - \theta_0}{\hat{\mathrm{SE}}}\rightsquigarrow \cN(0, 1)\]
+
+The test is: Reject null if
+\[|W|\geq Z_{\alpha/2} := \Phi^{-1}\left( 1 - \frac{\alpha}{2} \right)\]
+where
+\[W = \frac{\hat{\theta} - \theta_0}{\hat{\mathrm{SE}}}\]
+
+\begin{lemma}
+    The Type I error of this test is $\alpha$, asymptotically\framedfootnote{That is, take arbitrarily large number of samples.}.
+\end{lemma}
+\begin{proof}
+    Under the null,
+    \[\Pr_{\theta_0}\left( |W| > Z_{\alpha/2} \right) \rightsquigarrow \Pr_{\theta_0}\left( |Z| > Z_{\alpha/2} \right) = \frac{\alpha}{2} + \frac{\alpha}{2}.\]
+\end{proof}
+
+Let's compute the $p$-value of the Wald test. Again,
+\[\Pr_{\theta_0}(|W(x)| \geq |w(x)|)\rightsquigarrow \Pr_{\theta_0}(|Z| \geq |w(x)|) = 2\Phi(-|w(x)|)\]
+
+
+\subsection{\texorpdfstring{$t$}{t}-test}
+Remember before that we wanted to compare if two distributions were the same. The $t$-statistic satisfies a $t$ distribution which converged to a normal.
+
+The $t$ test frames around the $t$ statistic. Let's say we have $X_1, \dots, X_n$ iid from $\cN(\mu, \sigma^2)$ where $\mu$ and $\sigma$ are unknown, we want to test whether $\mu = \mu_0$ or not.
+
+The statistic we'll use is
+\[T = \frac{(\bar{X}_n - \mu_0)}{S_n/\sqrt{n}}\]
+$T\sim \cN(0, 1)$ under $H_0$. The $t$-test is: reject null when $T > t_{n-1, \frac{\alpha}{2}}$ which will give us a Type I error $\alpha$.
+
+With a large number of samples, this test converges to the Wald test and the $T$ statistic converges to the $W$ statistic in the Wald test.

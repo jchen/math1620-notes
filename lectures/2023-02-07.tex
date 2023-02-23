@@ -1,0 +1,77 @@
+%!TEX root = ../notes.tex
+\section{February 7, 2022}
+A quick remark with this field of mathematical statistics. Traditionally in mathematics, we're very accustomed to building up layers of abstraction. For example, you can't really jump to the end to Galois theory with Algebra. However, this field is quite different. It \emph{is} possible to jump to major conclusions before coming back to talk about the layers of abstraction.
+
+We'll talk about hypothesis testing here, and then loop back to discuss the $t$-test.
+
+\subsection{Hypothesis Testing}
+The idea, roughly, is for us to have a \emph{null} hypothesis and \emph{alternative} hypothesis. We want to talk about tests that allow us to do so, and the quality of those tests.
+
+\begin{definition}[Hypothesis Test]
+    We define a hypothesis test:
+    \begin{enumerate}
+        \item We partition parameter space $\Theta$ into $\Theta_0, \Theta_A$ disjoint. For some event $\Theta$, we say that our \ul{null hypothesis} is
+              \[H_0 : \Theta\in\Theta_0\]
+              and we say that our \ul{alternative hypothesis} is
+              \[H_A : \Theta\in\Theta_A\]
+        \item In our hypothesis test, our goal is to find an appropriate subset of outcomes $R\subset \mathcal{X}$ (called the \ul{rejection region}). Our hypothesis test is, if $x\in R$, reject the null. Otherwise, accept the null.
+    \end{enumerate}
+\end{definition}
+
+Usually,
+\[R = \left\{ x\mid T(x) > c \right\}\]
+where $T(x)$ is our estimator or statistic, and $c$ is a critical value. Our goal is to find good $T$s and $c$s for our hypothesis test.
+
+Today, our estimator is always going to be the \emph{sample mean}.
+
+\begin{example*}
+    Examples of hypothesis tests are $p$-tests, $t$-tests, $\chi^2$-tests, likelihood ratio tests, etc.
+\end{example*}
+
+There are some following outcomes of hypothesis tests\footnote{And these are the only outcomes. The null is either true or not, and we make some binary decision.}:
+\begin{center}
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+                             & \textbf{$H_0$ is true} & \textbf{$H_A$ is true} \\ \midrule
+        \textbf{Retain null} & Wonderful!             & Type II error          \\
+        \textbf{Reject null} & Type I error           & Wonderful!             \\ \bottomrule
+    \end{tabular}
+\end{center}
+
+A Type I error is when our null is true, yet we rejected it. A Type II error is when the alternative is true, but we kept the null.
+
+Given a test, we want to first compute the probability of committing an error. Once we've done that, we want to ask what the \emph{quality} of our test is.
+
+Let's try to compute the probability of an error:
+
+\begin{example}
+    Suppose we have normal distribution with $\sigma = 10$, $\mu$ unknown. We take a random sample, $n = 25$.
+
+    \begin{description}
+        \item[Hypotheses.] Our null hypothesis $H_0: \mu = 170$. Alternative hypothesis $H_A : \mu > 170$.
+        \item[Test.] Our test is that we reject the null if $\bar{X} \geq 172$.
+    \end{description}
+
+    Here, our estimator $T$ is the sample mean, and our critical value is $172$.
+
+    \begin{ques*}
+        What is the probability of committing a Type I error?
+
+        A Type I error is when we reject the null but the null is true. That's to say
+        \begin{align*}
+              & \Pr(\bar{X} \geq 172) \text{ if }\mu = 170
+            \intertext{We know the distribution of $\bar{X}$ for $n = 25$, so we can write}
+            = & \Pr\left( \frac{\bar{X} - \mu}{\sigma / \sqrt{n}} \geq \frac{172 - \mu}{\sigma / \sqrt{n}}\right) \\
+            = & \Pr (Z \geq 1)
+            \intertext{Where $Z\sim \cN(0, 1)$, which gives}
+            = & 1 - \Phi(1) \approx \boxed{.16}
+        \end{align*}
+    \end{ques*}
+\end{example}
+
+Going back to our initial introduction, we want to compute the \emph{quality} of our test.
+
+\begin{definition}[Power]
+    The power of a test is the probability that we reject the null when $H_A$ is true.
+\end{definition}
+

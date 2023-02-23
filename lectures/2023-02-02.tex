@@ -1,0 +1,148 @@
+%!TEX root = ../notes.tex
+\section{February 2, 2022}
+\subsection{Samples from Normal Distributions, \emph{continued}}
+We have a population and we are able to compute small samples. We can compute estimators on the small samples and want to gain information from them.
+
+\recall last time, we were discussing what we can say about distributions from samples from normal distributions.
+
+\begin{theorem*}[\cref{thm:5.3.1}, 5.3.1 of \cite{casella2002statistical}]
+    $X_1, \dots, X_n$ are random samples from $\mathcal{N}(\mu, \sigma^2)$.
+    \begin{enumerate}[a)]
+        \item $\bar X$ and $S^2$ are independent random variables.
+              \begin{itemize}
+                  \item Briefly, we expressed $X_1, \dots, X_n$ using a change of variable/transformation to $Y_1 = \bar{X}, Y_2 = \bar{X} - X_2, \dots, Y_n = \bar{X} - X_n$ and factored the pdf.
+              \end{itemize}
+        \item $\bar X$ has $\mathcal{N}\left( \mu, \frac{\sigma^2}{n} \right)$ distribution.
+        \item $(n-1)\frac{S^2}{\sigma^2}$ has $\chi^2$ distribution with $(n-1)$ degrees of freedom.
+    \end{enumerate}
+\end{theorem*}
+
+\begin{proof}[Proof of b]
+    \recall moment generating functions.
+
+    We use as fact that
+    \[M_{\bar X}(t) = \left[ M_X\left( \frac{t}{n} \right) \right]^n.\]
+    and
+    \[M_X\left( \frac{t}{n} \right) = \exp\left[ \frac{\mu t}{n} + \frac{\sigma^2 (t/n)^2}{2} \right]\]
+
+    Then we see that
+    \[M_{\bar X}(t) = \exp\left[ \mu t + \frac{\sigma^2}{n}\frac{t^2}{2}\right]\]
+    which is the moment generating function of $\cN\left( \mu, \frac{\sigma^2}{n} \right)$.
+\end{proof}
+
+Moving on to part c of the theorem.
+
+$\chi^2$ pdf:
+\[f(x) = \frac{1}{\Gamma\left( \frac{p}{2} \right) 2^{P/2}} x^{\frac{p}{2}-1}e^{-x/2}\]
+where $\Gamma$ distribution is black-boxed. We say this distribution has $p$ degrees of freedom.
+
+\todo{Fact environment}
+Facts:
+\begin{enumerate}[a)]
+    \item If $Z$ is $\cN(0, 1)$, then $Z^2\sim \chi^2$.
+    \item $X_1, \dots, X_n$ independent, with $X_i = \chi^2_{p_i}$.
+          \[X_1 + \cdots + X_n \sim \chi^2_{\sum p_i}\]
+\end{enumerate}
+
+\begin{proof}[Proof of \cref{thm:5.3.1} c)]
+    \textsc{wlog}, assume $\mu = 0, \sigma = 1$ such that $X_i \sim \cN(0, 1)$.
+
+    We induct on $n$. Let $\bar{X}_k, S^2_k$ be the sample mean and sample variance computed on the first $k$ random variables.
+
+    We claim without proof that
+    \begin{equation}\label{eq:5.3.1.c-long}
+        (n-1) S_n^2 = (n-2)S_{n-1}^2 + \left( \frac{n-1}{n} \right)\left( X_n - \bar{X}_{n-1} \right)^2
+    \end{equation}
+
+    \begin{description}
+        \item[Base Case $n=2$.] We have
+            \begin{align*}
+                S_2^2 = \frac{1}{2}(X_2 - X_1)^2 = \left( \frac{X_2 - X_2}{\sqrt{2}} \right)^2
+            \end{align*}
+            We know that\footnote{If $X_1\sim \cN(\mu_1, \sigma_1^2)$ and $X_2\sim \cN(\mu_2, \sigma_2^2)$, then $X_2 - X_1\sim \cN(\mu_2-\mu_1, \sigma_1^2 + \sigma_2^2)$}
+            \begin{align*}
+                X_2 - X_1                  & \sim \cN(0, 2) \\
+                \frac{X_2 - X_1}{\sqrt{2}} & \sim \cN(0, 1)
+            \end{align*}
+            so $S_2^2\sim \chi_1^2$.
+        \item[Inductive Hypothesis.] $(k-1)\frac{S_k^2}{\sigma^2} \sim \chi_{k-1}^2$.
+        \item[Inductive Step.] Let $n=k+1$. Using \cref{eq:5.3.1.c-long},
+            \begin{align*}
+                \underbrace{kS_{k+1}^2}_{\chi_k^2} = \underbrace{(k-1)S_k^2}_{\chi_{k-1}^2} + \underbrace{\left( \frac{k}{k+1} \right)\left( X_{k+1} - \bar{X}_k \right)^2}_{\chi_1^2}
+            \end{align*}
+            Using the fact that $\bar{X}_k$ and $S_{k}^2$ are independent ($\bar{X}$ and $S^2$ are independent verbatim), we can add the $\chi^2$'s. We'll maintain the independence tagging $X_{k+1}$ onto the proof.
+
+            We now want to show that $\sqrt{\frac{k}{k+1}}(X_{k+1}-\bar{X}_k)$ is $\cN(0, 1)$.
+
+            We know $\Var \bar{X}_k = \frac{1}{k}$ and $\Var X_{k+1} = 1$. Subtracting, $X_{k+1} - \bar{X}_k \sim \cN(0, \frac{k+1}{k})$ (from above). This gives us exactly
+            \[\sqrt{\frac{k}{k+1}}\left( X_{k+1} - \bar{X}_k \right)\sim \cN(0, 1)\]
+            which was as desired.
+    \end{description}
+\end{proof}
+
+We'll use this fact:
+\[(n-1)\frac{S_n^2}{\sigma^2}\sim \chi^2_{n-1}\]
+in deriving the Student's $t$-distribution.
+
+\subsection{Student's \texorpdfstring{$t$}{t}-distribution}
+
+\begin{remark*}
+    William Gosset worked at the Guinness brewery, and he was measuring barley. He wanted to know whether the barley was representative of the population.
+
+    Guinness did not allow for publishing under his own name, so he published under ``Student''.
+\end{remark*}
+
+We have the following game: $X_1, \dots, X_n$ are random samples from $\cN(\mu, \sigma^2)$.
+
+To normalize $X_i$, we can do
+\[\frac{X_i - \mu}{\sigma}\sim \cN(0, 1).\]
+To normalize $\bar{X}$, we can do
+\[\frac{\bar{X} - \mu}{\sigma/\sqrt{n}}\sim \cN(0, 1)\]
+
+If we \emph{know} the true variance, we can go from sample mean to true mean by using this fact.
+
+What if we don't have the true variance? Our best bet is the sample variance. Let's look instead at
+\begin{equation}\label{eqn:student-t}
+    \frac{\bar{X} - \mu}{S/\sqrt{n}}\sim ?
+\end{equation}
+where $S$ is the sample variance. What is the distribution of \emph{this} random variable now (before, we knew it was $\cN(0, 1)$)?
+
+Let's derive the distribution of \cref{eqn:student-t}.
+\begin{align*}
+    \frac{\bar{X} - \mu}{S/\sqrt{n}} & = \frac{(\bar{X} - \mu)/\left(\frac{\sigma}{\sqrt{n}}\right)}{\sqrt{S^2/\sigma^2}}                \\
+    \intertext{Since we know that $(n-1)\frac{S^2}{\sigma^2} = \chi_{n-1}^2$, we know that $S/\sigma = \sqrt{\frac{\chi^2_{n-1}}{n-1}}$
+    }
+    \frac{\bar{X} - \mu}{S/\sqrt{n}} & = \frac{(\bar{X} - \mu)/ \left(  \frac{\sigma}{\sqrt{n}}\right)}{\sqrt{\frac{\chi_{n-1}^2}{n-1}}} \\
+    \intertext{Using $U \sim \cN(0,1)$ and $V\sim \chi^2_p$, }
+                                     & = \frac{U}{\sqrt{V/p}}
+\end{align*}
+Now this reduces to finding the distribution of $\frac{U}{\sqrt{V/p}}$. We get dirty with the pdfs.
+
+\begin{align*}
+    F_{U, V}(u, v) = \frac{1}{(2\pi)^{1/2}}e^{-u^2/2}\cdot \frac{1}{\Gamma\left( \frac{p}{2} \right)2^{p/2} v^{p/2 - 1}e^{-v/2}} \\
+    \intertext{with bounds $u\in (-\infty, \infty), v\in (0, \infty)$}
+\end{align*}
+We do a change of variables $t = \frac{u}{\sqrt{v/p}}$ and $w = v$, with Jacobian $J = \left( \frac{w}{p} \right)^{1/2}$\footnote{We compute matrix $\begin{bmatrix}\frac{dt}{dv} & \end{bmatrix}$ \todo{write out}}.
+
+We now write
+\begin{align*}
+    F_{T, W}(t, w) & = F_{U, V}\left(t\sqrt{w/p}, w\right)\cdot \left( \frac{w}{p} \right)^{1/2}
+    \intertext{We really want the distribution for $T$, so we evaluate}
+    \int_0^\infty
+    F_{T, W}(t, w)
+    \ \mathrm{d}w  & =\int_0^\infty F_{U, V}\left(t\sqrt{w/p}, w\right)\cdot \left( \frac{w}{p} \right)^{1/2}\ \mathrm{d}w                                                                                                           \\
+                   & = \frac{1}{(2\pi)^{1/2}}\cdot \frac{1}{\Gamma\left( p/2\right)2^{p/2}}\int_0^\infty e^{-\frac{t^2 w}{2p}}w^{p/2-1} e^{-w/2} \left( \frac{w}{p} \right)^{1/2}\ \mathrm{d}w                                       \\
+                   & = \frac{1}{(2\pi)^{1/2}}\cdot \frac{1}{\Gamma\left( p/2\right)2^{p/2}p^{1/2}} \int_0^\infty \underbrace{e^{-\frac{1}{2}\left( t^2/p + 1 \right)}w^{\frac{p+1}{2} - 1}}_{\text{pdf of }\Gamma(\cdots)}\ \mathrm{d}w \\
+    \intertext{Which gives}
+    F_T(t)         & = \frac{1}{(2\pi)^{1/2}}\cdot \frac{1}{\Gamma(p/2)\cdot 2^{p/2}p^{1/2}} \cdot \Gamma\left( \frac{p+1}{2} \right)\left[ \frac{2}{1+t^2/p} \right]^{\frac{p+1}{2}}
+\end{align*}
+which is the Student's $t$-distribution.
+
+\begin{ques*}
+    Why do we care about the Student's $t$-distribution?
+\end{ques*}
+
+Let
+\[T_n\simeq \frac{\bar{X}_n - \mu}{S_n/\sqrt{n}}\]
+and we'll see that the limit of $T_n$ as $n$ goes to infinity approaches $\cN(0, 1)$ in distribution:
+\[T_n\overset{n\to \infty}{\leadsto}\cN(0, 1).\]

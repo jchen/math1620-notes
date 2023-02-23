@@ -1,0 +1,132 @@
+%!TEX root = ../notes.tex
+\section{February 23, 2022}
+
+Reviewing schedules. We hope that this is the last week of hypothesis testing. We'll discuss the KL divergence today.
+
+\subsection{KL Divergence}
+Say we have $X_1, \dots, X_n$ samples from $q(x)$, iid.
+
+Say that we have two models for $q(x)$, $p_0(x)$ and $p_1(x)$.
+
+Having computed these, we can compute a likelihood
+\[\Lambda = \prod^n_{i=1}\frac{p_1(x_i)}{p_0(x_i)}\]
+which is called the likelihood ratio. We also have the log likelihood
+\[\hat{\Lambda}_n = \frac{1}{n}\sum^n_{i=1}\log \frac{p_1(x_i)}{p_0(x_i)}\]
+where $\hat{\Lambda}_n$
+\[L_i = \log \frac{p_1(x_i)}{p_0(x_i)}\]
+and we can think of our log likelihood as a sample mean over $L_i$s,
+\[\hat{\Lambda}_n = \frac{1}{n}\sum^n_{i=1}L_i.\]
+By the law of large numbers, $\hat{\Lambda}_n\rightsquigarrow \E L_i$. Computing this,
+\begin{align*}
+    \E L_i
+     & = \int q(x)\cdot \log \frac{p_1(x)}{p_0(x)}\ dx                                     \\
+     & = \int q(x)\cdot \log \left( \frac{p_1(x)}{p_0(x)} \cdot \frac{q(x)}{q(x)} \right)  \\
+     & = \int q(x) \left( \log \frac{q(x)}{p_0(x)} - \log \frac{q(x)}{p_1(x)}  \right)\ dx \\
+     & = \int q(x) \log \frac{q(x)}{p_0(x)}\ dx - \int q(x) \log \frac{q(x)}{p_1(x)}\ dx
+\end{align*}
+\begin{definition}[KL Divergence]
+    We have that
+    \[\int_{-\infty}^\infty q(x) \log \frac{q(x)}{p_0(x)}\ dx\]
+    is the KL divergence of $p$ from $q$. We notate this $D(q||p)$.
+\end{definition}
+Then $\E L_i = D(q||p_0) - D(q||p_1)$.
+
+So for large $n$, the log LRT is
+\[\E \hat{\Lambda_n} \gtrless^{H_1}_{H_0} \lambda\]
+which is effectively the same as
+\[D(q||p_0) - D(q||p_1) \gtrless^{H_1}_{H_0} \lambda.\]
+When $\lambda = 0$,
+\[D(q||p_0) \gtrless^{H_1}_{H_0} D(q||p_1).\]
+When LRT is equivalent to selecting the model that most closely resembles $q$ in the context of KL.
+
+\begin{example}
+    $H_0: X_1, \dots, X_n\overset{\mathrm{iid}}{\sim}\cN(\mu_0, \sigma^2)$ and $H_1: X_1, \dots, X_n\overset{\mathrm{iid}}{\sim}\cN(\mu_1, \sigma^2)$. Let's calculate the KL divergence $D(p_1||p_0)$.
+
+    We know the pdfs of these distribution, so we just calculate it.
+    \begin{align*}
+        \log \frac{p_1(x)}{p_0(x)}
+         & = \log\left( \frac{\frac{1}{\sqrt{2\pi\sigma^2}} \exp\left[ -\frac{1}{2\sigma^2}(x - \mu_1)^2 \right]}{\frac{1}{\sqrt{2\pi\sigma^2}} \exp\left[ -\frac{1}{2\sigma^2}(x - \mu_0)^2 \right]} \right) \\
+         & = \log\left( \frac{ \exp\left[ -\frac{1}{2\sigma^2}(x - \mu_1)^2 \right]}{\exp\left[ -\frac{1}{2\sigma^2}(x - \mu_0)^2 \right]} \right)                                                            \\
+         & = \frac{1}{2\sigma^2}\left[ (x - \mu_0)^2 - (x - \mu_1)^2 \right]                                                                                                                                  \\
+         & = \frac{1}{2\sigma^2}\left[ \mu_0^2 - 2\mu_0x + 2\mu_1x -\mu_1^2 \right]
+    \end{align*}
+    By definition,
+    \begin{align*}
+        D(p_1||p_0)
+         & = \int p_1(x)\log \frac{p_1(x)}{p_0(x)}\ dx                                                                             \\
+         & = \E_{p_1}\left( \log \frac{p_1(x)}{p_0(x)} \right)                                                                     \\
+         & = \E_{p_1} \left[ \frac{1}{2\sigma^2}\left( \mu_0^2 - 2\mu_0x + 2\mu_1x -\mu_1^2 \right) \right]                        \\
+         & = \left[ \frac{1}{2\sigma^2}\left( \mu_0^2 - \mu_1^2 + 2(\mu_1 - \mu_0)\underbrace{\E_{p_1}(x)}_{\mu_1} \right) \right] \\
+         & = \frac{1}{2\sigma^2}\left[ \mu_0^2 - \mu_1^2 + 2\mu_1^2 - 2\mu_0\mu_1 \right]                                          \\
+         & = \frac{(\mu_0 - \mu_1)^2}{2\sigma^2}
+    \end{align*}
+\end{example}
+We want to prove that, $D(q||p)\geq 0$ and equal if $p = q$. It's \emph{kinda} like a metric but it's not\footnote{It violates the triangle inequality.}. We'll use Jensen's inequality.
+\begin{theorem}
+    If $f(x)$ is convex, then $\E[f(x)] \geq f(\E x)$ and equality when if $f$  is linear.
+
+    We say $f$ is convex if $\forall \lambda\in [0,1]$, $f(\lambda x + (1-\lambda)y) \leq \lambda(f(x))+ (1-\lambda)(f(y))$.
+\end{theorem}
+\begin{proof}
+    We have
+    \begin{align*}
+        D(q||p)
+         & = \int q(x) \log \frac{q(x)}{p(x)}\ dx           \\
+         & = \E_q\left[ \log \frac{q(x)}{p(x)} \right]      \\
+         & = \E_q \left[ -\log \frac{p(x)}{q(x)} \right]
+        \intertext{Using the fact that $-\log(x)$ is convex, applying Jensen's}
+         & \geq -\log \E_q \left( \frac{p(x)}{q(x)} \right) \\
+         & = -\log \int q(x)\cdot \frac{p(x)}{q(x)}\ dx     \\
+         & = -\log \int p(x)\ dx                            \\
+         & = -\log 1 = 0
+    \end{align*}
+    We have equality only when $\log \frac{p(x)}{q(x)}$ is linear, which happens exactly when $p = q$.
+\end{proof}
+
+Assume that $0 < \alpha \leq p_i(x) \leq \beta < \infty$, $i = 0, 1$. We want to bound $\Pr(\text{Type I})$ and $\Pr(\text{Type II})$.
+\[\log \frac{\alpha}{\beta} \leq \log \frac{p_1(x_i)}{p_0(x_i)}\leq \log \frac{\beta}{\alpha}\]
+\[\log \frac{\alpha}{\beta} \leq L_i\leq \log \frac{\beta}{\alpha}\]
+so $L_i$ is bounded and $\hat{\lambda}_n$ is the sum of bounded iid random variables.
+
+Hoeffding's inequality tells us what to do when we have sums of bounded random variables.
+\begin{theorem}[Hoeffding's Inequality]
+    Suppose we have $Z_1, \dots, Z_n$ iid random variables, $a\leq Z_i < b$ $\forall 1\in 1, \dots, n$.
+
+    We have that
+    \begin{align*}
+        \Pr\left( \frac{1}{n}\sum_i Z_i - \E(Z) > \epsilon \right) & \leq e^{-2n\epsilon^2 / c^2}
+        \intertext{and}
+        \Pr\left(\E(Z)  - \frac{1}{n}\sum_i Z_i > \epsilon\right)  & \leq e^{-2n\epsilon^2 / c^2}
+    \end{align*}
+    where $c^2 = (b-a)^2$.
+\end{theorem}
+Consider hypothesis test $\hat{\Lambda}_n \gtrless^{H_1}_{H_0} 0$.
+Then
+\begin{align*}
+    \Pr(\text{Type I})
+     & = \Pr(\hat{\Lambda} > 0 \mid H_0)                                                                \\
+     & = \Pr(\hat{\Lambda}_n - \E [\hat{\Lambda}_n \mid H_0] > -\E [\hat{\Lambda}_n \mid H_0] \mid H_0)
+\end{align*}
+Let $\epsilon = -\E[\hat{\Lambda}_n\mid H_0]$. Let's compute $\epsilon$.
+\begin{align*}
+    \E_{p_0}\left[ \hat{\Lambda} \mid H_0 \right]
+     & = \int p_0(x) \log \frac{p_1(x)}{p_0(x)}\ dx  \\
+     & = -\int p_0(x) \log \frac{p_0(x)}{p_1(x)}\ dx \\
+     & = -D(p_0 || p_1)
+\end{align*}
+Then
+\begin{align*}
+    \Pr(\text{Type I}) & = \Pr\left( \hat{\Lambda}_n - (-D(p_0 || p_1)) > D(p_0 || p_1)\mid H_0 \right) \\
+    \intertext{Applying Hoeffding's inequality,}
+                       & \leq \exp\left[ \frac{-2n D(p_0||p_1)^2}{c^2} \right]
+\end{align*}
+where $c^2 = \left( \log \frac{\beta}{\alpha} - \log \frac{\alpha}{\beta} \right)^2$.
+
+We can also then compute $\Pr(\text{Type II})$.
+\begin{align*}
+    \Pr(\text{Type II})
+     & = \Pr (\hat{\Lambda}_n < 0 | H_1)                                           \\
+     & = \Pr\left( D(p_1 || p_0) - \hat{\Lambda}_n > D(p_1 || p_0)\mid H_1 \right) \\
+     & \leq \exp\left[ \frac{-2n D(p_1||p_0)^2}{c^2} \right]
+\end{align*}
+This gives us bounds on our Type I and Type II errors, after Neyman-Pearson gives us that the likelihood ratio test is the optimal test.

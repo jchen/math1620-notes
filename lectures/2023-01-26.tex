@@ -1,0 +1,154 @@
+%!TEX root = ../notes.tex
+\section{January 26, 2022}
+\subsection{Introductions}
+We'll introduce this course and get an overview of the course.
+
+Math 1610 is not a hard prerequisite, and there are enough people in the course that makes it flexible.
+
+There will be a programming component of the course, which will either be in \textsf{R} or \textsf{Python}.
+
+We'll jump right in!
+
+\subsection{Probability}
+
+\begin{definition}[Mathematical setting of probability and its meaning]
+    We have a \ul{probability space} $(\Omega, \mathcal{A}, P)$ consisting of:
+    \begin{itemize}
+        \item a set $\Omega$ called the \emph{sample space},
+        \item a $\sigma$-algebra $\mathcal{A}$ consisting of a selection of subsets of $\Omega$,
+        \item and a probability measure $P$.
+    \end{itemize}
+    Elements of $\Omega$ are called \emph{outcomes}, subsets of $\Omega$ are called $\emph{events}$, so that $\mathcal{A}$ is a collection of certain events, and $P$ is a function
+    \[P : \mathcal{A} \to [0, 1]\]
+    that assigns to every event in $\mathcal{A}$ a number between $0$ and $1$.
+\end{definition}
+
+In this context, we have
+\begin{definition}[Random Variables]
+    We have \ul{random variables}, which are measurable functions
+    \[X : \Omega \to \RR\]
+    Associated to a random variable $X$ is the cumulative distribution function (\textsf{cdf})
+    \[F_X(x) = P(X \leq x) = P(\{\omega \in \Omega : X(\omega) \leq x\}).\]
+    We distinguish between discrete and continuous random variables:
+    \begin{itemize}
+        \item Discrete random variables have a probability mass function (\textsf{pmf})
+        \item Continuous random variables have a probability density function (\textsf{pdf})
+    \end{itemize}
+    This is the mathematical framework of probability theory. Every random variable is encoded in its \textsf{pmf} or \textsf{pdf}.
+\end{definition}
+
+People coming from a pure math might want an \emph{axiomatic framework} and to run with that. When you try to ask questions about events in the real world, you need an \emph{extra} something. You want an extra computation (like a statistic) of whether an event is going to play out.
+
+We'll be relying on a theoretical foundation and extract out numerics about what experiments in the real world are going to do based on some observations.
+
+\subsection{Frequentist or Bayesian?}
+
+There are two main perspectives on the meaning of probability: frequentist and Bayesian.
+
+\begin{definition}[Frequentist Interpretation]
+    In the \ul{frequentist interpretation}, the probability of an event is equal to the long-term frequency of the event's occurrence when the same process is \emph{repeated} many times.
+
+    If we have a coin, we have $\frac{1}{2}$ probability of each heads or tails. When we flip that coin many times, we get roughly half heads and half tails.
+
+    Notice we had an \emph{exact} number. In frequentist point of views, we do not attach probabilities to any hypotheses or fixed but unknown quantities, like $p$, $\theta$, or $\lambda$ in the definition of the standard distribution functions.
+\end{definition}
+\begin{example}
+    Consider the statement ``the probability of pulling an ace out of a deck of cards is $\frac{4}{52}$.''
+
+    \emph{What is the frequentist explanation?} If we used the same deck of cards, and took a card out of each of them (replacing and shuffling). Roughly $\frac{4}{52}$ of those trials (lots, like $10,000$) will result in an Ace.
+
+    \emph{What are problems in the real world?} We might not get to do $10,000$ trials, like the weather.
+\end{example}
+
+\begin{definition}[Bayesian Interpretation]
+    In the \ul{Bayesian interpretation}, probabilities measure \emph{degrees of belief}. These can be beliefs about the occurrence of an event, the truth of a hypothesis, or the truth of any random fact.
+
+    We're trying to measure the uncertainty of a hypothesis. With this definition, you can talk about the probabilities of single events, which has no meaning in the frequentist point of view. The frequentist doesn't allow us to measure a single event. Maybe you could say, in the Bayesian point of view, you introduce new frameworks that give you confidence intervals for a single event having not witnessed them.
+\end{definition}
+\begin{example}
+    Consider these examples:
+    \begin{itemize}
+        \item ``There is a $50\%$ chance this coin will land on its `tails' side.''
+        \item ``There is a $60\%$ chance it will rain tomorrow.''
+        \item ``There is a $90\%$ chance the cat trashed the house.''
+    \end{itemize}
+    \emph{Which is frequentist?} The first example, since we can repeat it multiple times.
+
+    We can also speak of the \emph{degree of logical support} for an assertion in order to move the evaluation metric from belief to something less personal and more objective.
+
+    In the mathematical implementation of the Bayesian point of view, unknown parameters are not viewed as unknown real numbers but are replaced by random variables.
+\end{example}
+
+\begin{example}[A typical statistical problem]
+    We have a coin that has some probability $\theta$ of landing ($H = 1$) and probability $1-\theta$ of landing tails ($T = 0$). A coin toss is then modeled by the Bernoulli random variable $X$ with \textsf{pmf}
+    \[f_X(k) = \begin{cases}
+            \theta     & \text{if }k = 1 \\
+            1 - \theta & \text{if }k = 0
+        \end{cases}\]
+    Suppose we flip the coin 10 times and obtain the following results:
+    \[1\quad 0 \quad 0 \quad 1 \quad 0 \quad 1 \quad 0\quad 1 \quad 0 \quad 1\]
+    In the frequentist point of view, $\theta$ is a fixed by unknown real number, but we estimate it using the data. One such estimate is
+    \[\frac{\text{sum}}{\text{total number}} = \frac{5}{10} = 0.5\]
+    (Yet, in fact, the data was generated using $\theta = 0.4$).
+
+    In the Bayesian point of view, there's a high probability that $\theta$ is $0.5$ but it could be something else.
+\end{example}
+
+We want to compute the probability density function of the parameter $\theta$ being a certain value. We'll do it in two ways, frequentist and Bayesian.
+
+We'll view this data as the output value of 10 i.i.d. random variables
+\[X_1, \dots, X_{10}\]
+defined on a sample space $\Omega$. That is, we suppose we viewed each of these random variables at one $\omega\in\Omega$ and found
+\[X_1(\omega) = 1,\quad X_2(\omega) = 0, \quad\cdots\quad X_{10}(\omega) = 1\]
+
+Let
+\[\hat\theta = \frac{X_1 + \cdots + X_{10}}{10}\]
+which is a new random variable, called a \ul{statistic}, and in this case an \ul{estimator}\footnote{When we compute a linear regression, we compute a model (within a model class) is a maximum-likelihood estimator that reduces our loss.} for the real number $\theta$.
+
+$\hat\theta(\omega)$ takes in some $\omega\in\Omega$. We know that
+\[W = X_1 + \cdots + X_{10}\sim \mathsf{binom}\footnote{$\mathsf{binom}(\mathsf{size} = 10, \mathsf{prob} = \theta)$ should invoke the thought of $10$ coin flips with $\theta$ probability heads each.}(\mathsf{size} = 10, \mathsf{prob} = \theta)\]
+
+Since $\hat\theta = \frac{W}{10}$, it takes on values $0, \frac{1}{10}, \cdots, \frac{9}{10}, 1$ and the \textsf{pmf} of $\hat\theta$ is
+\[f_{\hat\theta}(x) = P(\hat\theta = x) = P(W = 10x) = {10\choose 10x}\theta^{10x}(1 - \theta)^{10-10x}\]
+\emph{Why did $\theta$ come up here?} $\hat\theta$ is conditioned on $\theta$. Notice that the \textsf{pmf} of $\hat\theta$ depends on $\theta$ and we might emphasize this by writing $f_{\hat\theta}(x\mid \theta)$. Our new \textsf{pmf} depends on this conditional in some formulaic way.
+
+*** Code
+
+When actual data is given (selecting a specific $\omega$), we say $\hat\theta(\omega)$ is an estimate, but without selecting a specific $\omega$ we refer to the random variable $\hat\theta$ as an \emph{estimator}.
+
+We will, in the course, discuss properties of estimators, methods of finding them and comparing their accuracy, and apply them in analysis with \ul{hypothesis tests} and by specifying \ul{confidence intervals}.
+
+In the Bayesian point of view, $\theta$ is not viewed as a fixed but unknown real number, but instead the value of a random variable $\Theta$ with some \ul{prior distribution} $f_{\Theta}(\theta)$ for different values of $\theta$.
+
+The estimator $\hat\theta$ has conditional \textsf{pmf}
+***
+\[f_{\hat\theta}\]
+
+\begin{definition}[Prior/Posterior]
+    We want to build priors and posteriors. Given priors, what are posteriors (given experiment, how do we update priors?).
+
+    We start with some information about $\Theta$ expressed as a \ul{prior distribution} $f_{\Theta}(\theta)$, and after (additional) data is collected, this is an updated to a \ul{posterior distribution} using Bayes' formula.
+    ***
+\end{definition}
+
+\subsection{Course Logistics}
+We will cover
+\begin{itemize}
+    \item Chapters 5-12 in Casella \& Berger, \emph{Statistical Inference} \cite{casella2002statistical}
+    \item Wasserman, \emph{All of Statistics} \cite{wasserman2004all}
+    \item DeGroot \& Schervish, \emph{Probability and Statistics} \cite{degroot2012probability}
+    \item J.O. Berger, \emph{Statistical Decision Theory and Bayesian Analysis} \cite{berger1985statistical}
+\end{itemize}
+
+Course is held TTh 10:30-11:50 a.m., in-person in B\&H 165. Attendance is required.
+
+TA: Liza Kolev, who will grade assignments and hold a weekly problem session.
+
+My office hours: TBD, but for this first week please email and set up Zoom appointments.
+
+Topics: 
+\begin{itemize}
+    \item ***
+\end{itemize}
+
+Weekly homework, or weekly project (a little more coding). There is no final, there is no midterm. 

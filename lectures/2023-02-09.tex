@@ -1,0 +1,49 @@
+%!TEX root = ../notes.tex
+\section{February 9, 2022}
+\emph{Rest in notebooks}.
+
+Let us have two normal distributions with mean $\mu_A$ and $\mu_B$, $\sigma = 1$, and decision threshold $c = \frac{\mu_A + \mu_b}{2}$.
+
+Our goal is to get the Type I and Type II error under $\delta$. Because everything is symmetrized, Type I error equals Type II error.
+
+\begin{theorem}
+    If \[ n \geq \frac{4z_{\delta}}{(\mu_A - \mu_B)^2} > \frac{8\log{1/\delta}}{(\mu_A - \mu_B)^2}\]
+    then the hypothesis test is correct with probability $\geq 1 - \delta$.
+\end{theorem}
+
+\begin{proof}
+    We want to bound our type II error.
+    \begin{align*}
+        \Pr_B(\bar{X} \leq C)                                                                                  & \leq \delta                                   \\
+        \Pr_B\left( \frac{\bar{X} - \mu_B}{\sigma / \sqrt{n}} \leq \frac{c - \mu_B}{\sigma / \sqrt{n}} \right) & \leq \delta                                   \\
+        \Pr\left( z_\delta \leq \frac{c - \mu_B}{\sigma / \sqrt{n}} \right)                                    & \leq \delta                                   \\
+        \frac{\sigma z_\delta}{\sqrt{n}}                                                                       & \leq c - \mu_B                                \\
+        c                                                                                                      & \geq \mu_B + \frac{\sigma z_\delta}{\sqrt{n}} \\
+        \frac{\mu_A + \mu_B}{2}- \mu_B                                                                         & \geq \frac{\sigma z_\delta}{\sqrt{n}}         \\
+        \frac{\mu_A + \mu_B}{2}                                                                                & \geq \frac{\sigma z_\delta}{\sqrt{n}}         \\
+        \Rightarrow \sqrt{n}                                                                                   & \geq \frac{2\sigma z_\delta}{\mu_A - \mu_B}   \\
+        n                                                                                                      & \geq \frac{4 z_\delta^2}{(\mu_A - \mu_B)^2}
+    \end{align*}
+\end{proof}
+
+\begin{lemma}
+    $\displaystyle z_\delta > \sqrt{2\log{\frac{1}{\delta}}}$
+\end{lemma}
+\begin{proof}
+    We want to compute $z_\delta$. We want
+    \begin{align*}
+        \int_z^\infty \frac{1}{\sqrt{2\pi}} e^{-x^2/2}\ dx & \leq \delta
+    \end{align*}
+    Let's suppose we have $X \sim \cN(0, 1)$, then
+    \[\Pr(X > t) = \Pr(e^{\lambda x} > e^{\lambda t}), \lambda > 0\]
+    Using Markov's inequality, this
+    \[< \frac{\mathbb{E}[e^{\lambda x}]}{e^{\lambda t}} \overset{\text{mgf}}{=} e^{\lambda^2/2 - \lambda t}\]
+    The minimum happens when $\lambda = t$ which is
+    \[\Pr(X > t) \leq e^{-t^2 / 2}\]
+    Then reintroducing $z_\delta$,
+    \[\Pr(X > z_\delta)\leq e^{-z_\delta^2 / 2} < \delta\]
+    and
+    \[-\frac{z_\delta^2}{2} < \log \delta\]
+\end{proof}
+
+Motivation: this silly hypothesis test is guaranteed a certain success rate based on $n$. What is the best possible bound on $n$ over all algorithms? Is it attainable?
